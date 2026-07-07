@@ -1,0 +1,48 @@
+.reaction-bar {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  filter: grayscale(0.4);
+  opacity: 0.75;
+}
+
+.reaction-bar--md .reaction-btn {
+  width: 40px;
+  height: 32px;
+  font-size: 16px;
+}
+
+.reaction-bar--sm .reaction-btn {
+  width: 32px;
+  height: 26px;
+  font-size: 13px;
+}
+
+.reaction-btn:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.reaction-btn--active {
+  border-color: var(--color-primary);
+  background-color: #eef2ff;
+  filter: grayscale(0);
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.reaction-emoji {
+  line-height: 1;
+}
