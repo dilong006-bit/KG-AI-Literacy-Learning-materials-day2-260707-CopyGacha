@@ -11,8 +11,10 @@
   position: relative;
 }
 
-/* F22 상단 중심 이미지 밴드: 카드 패딩을 뚫고 풀블리드, 상단 모서리 라운드 */
+/* F22 상단 중심 이미지 밴드: 카드 패딩을 뚫고 풀블리드, 상단 모서리 라운드.
+   flex 컬럼 아이템의 음수 마진은 좌우 비대칭이 되므로 너비를 명시해 대칭 보장. */
 .headline-card > .card-media {
+  width: calc(100% + 2 * var(--spacing-lg));
   margin: calc(-1 * var(--spacing-lg)) calc(-1 * var(--spacing-lg)) 0;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
