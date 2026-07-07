@@ -57,7 +57,11 @@ export default async function handler(req, res) {
       return res.status(upstream.status).json({ error: 'rate_limited' });
     }
     if (!upstream.ok) {
-      return res.status(502).json({ error: 'upstream_error' });
+      // 진단용: 실제 upstream status/본문 일부 노출(키는 미포함)
+      const detail = await upstream.text().catch(() => '');
+      return res
+        .status(502)
+        .json({ error: 'upstream_error', upstream_status: upstream.status, detail: detail.slice(0, 200) });
     }
 
     const data = await upstream.json();
@@ -66,7 +70,8 @@ export default async function handler(req, res) {
     // 동일 쿼리 단시간 캐시로 쿼터 절약
     res.setHeader('Cache-Control', 'public, max-age=60');
     return res.status(200).json({ results });
-  } catch {
-    return res.status(502).json({ error: 'upstream_error' });
+  } catch (e) {
+    // 진단용: 예외 메시지 노출(fetch 미정의 등 런타임 문제 식별)
+    return res.status(502).json({ error: 'upstream_error', exception: String((e && e.message) || e) });
   }
 }
