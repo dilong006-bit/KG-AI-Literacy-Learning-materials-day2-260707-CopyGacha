@@ -34,7 +34,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'query_required' });
   }
 
-  const key = process.env.UNSPLASH_ACCESS_KEY;
+  // 공백/개행으로 오염된 값 방어: 첫 토큰만 사용(붙여넣기 사고 대비)
+  const key = (process.env.UNSPLASH_ACCESS_KEY || '').trim().split(/\s+/)[0];
   if (!key) {
     // 키 미설정(로컬/미배포) — 클라이언트는 이를 실패로 보고 글래스 폴백
     return res.status(500).json({ error: 'key_missing' });
@@ -57,11 +58,7 @@ export default async function handler(req, res) {
       return res.status(upstream.status).json({ error: 'rate_limited' });
     }
     if (!upstream.ok) {
-      // 진단용: 실제 upstream status/본문 일부 노출(키는 미포함)
-      const detail = await upstream.text().catch(() => '');
-      return res
-        .status(502)
-        .json({ error: 'upstream_error', upstream_status: upstream.status, detail: detail.slice(0, 200) });
+      return res.status(502).json({ error: 'upstream_error', upstream_status: upstream.status });
     }
 
     const data = await upstream.json();
@@ -71,7 +68,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'public, max-age=60');
     return res.status(200).json({ results });
   } catch (e) {
-    // 진단용: 예외 메시지 노출(fetch 미정의 등 런타임 문제 식별)
-    return res.status(502).json({ error: 'upstream_error', exception: String((e && e.message) || e) });
+    // 키·본문은 노출하지 않음(예외 유형만)
+    return res.status(502).json({ error: 'upstream_error', reason: (e && e.name) || 'fetch_failed' });
   }
 }

@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'forbidden_host' });
   }
 
-  const key = process.env.UNSPLASH_ACCESS_KEY;
+  const key = (process.env.UNSPLASH_ACCESS_KEY || '').trim().split(/\s+/)[0];
   if (key) {
     try {
       // ixid 등 쿼리 보존한 채 GET (본문 무시)
